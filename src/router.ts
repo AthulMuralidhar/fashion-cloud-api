@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 
 import UserModel from "./models/user";
+import faker from "faker";
 
 
 export const userRouter = express.Router();
@@ -15,11 +16,23 @@ userRouter.get("/", async (req: Request, res: Response) => {
 });
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
-    return UserModel.findById(req.params.id).then((users)=> {
-        res.status(200).send(users);
-    }).catch((e) => {
+    try {
+        const result = await UserModel.findByIdAndUpdate(req.params.id, {'$set': {
+                username: faker.name.findName(),
+                email: faker.internet.email(),
+                extraInfo: faker.lorem.text()
+            }
+        }, {upsert: true, new: true, rawResult: true })
+
+        if (result.lastErrorObject.updatedExisting){
+            console.log("Cache hit")
+        } else {
+            console.log("Cache miss")
+        }
+        res.status(200).send(result.value)
+    } catch (e) {
         res.status(500).send(e);
-    })
+    }
 });
 
 userRouter.put("/:id", async (req: Request, res: Response) => {
