@@ -7,11 +7,17 @@ const userSchema = new mongoose.Schema(
             unique: true,
             required: true,
         },
+        email:{
+            type: String
+        },
+        extraInfo:{
+            type: String
+        }
     },
     { timestamps: true },
 );
 
-const User = mongoose.model('User', userSchema);
+const UserModel = mongoose.model('User', userSchema);
 
 
-export default User;
+export default UserModel;

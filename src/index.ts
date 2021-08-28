@@ -4,6 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import {connectDb, createSeedUsersWithMessages} from "./models/helpers";
 import {models} from "mongoose";
+import {userRouter} from "./router";
 
 /*
 ref for mongo: https://www.robinwieruch.de/mongodb-express-setup-tutorial
@@ -28,7 +29,6 @@ connectDb().then(async ()=>{
     if (eraseDatabaseOnInit) {
         await Promise.all([
             models.User.deleteMany({}),
-            models.Message.deleteMany({}),
         ]);
     }
    try {
@@ -43,6 +43,8 @@ connectDb().then(async ()=>{
         console.log(`Listening on port ${PORT}`);
     });
 })
+
+app.use("/", userRouter)
 
 
 
