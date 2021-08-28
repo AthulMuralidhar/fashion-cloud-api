@@ -30,13 +30,16 @@ connectDb().then(async ()=>{
         await Promise.all([
             models.User.deleteMany({}),
         ]);
+        try {
+            await createSeedUsersWithMessages();
+            console.log('Seeded mongodb succesfully')
+        } catch (e) {
+            console.log(`Seeded mongodb failed with error:${e}`)
+        }
+    } else {
+        console.log('skipping seed...')
     }
-   try {
-        await createSeedUsersWithMessages();
-        console.log('Seeded mongodb succesfully')
-    } catch (e) {
-       console.log(`Seeded mongodb failed with error:${e}`)
-   }
+
 
     app.listen(PORT, () => {
         console.log('MongoDB is up!')
