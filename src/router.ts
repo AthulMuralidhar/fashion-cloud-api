@@ -65,14 +65,11 @@ userRouter.delete("/", async (req: Request, res: Response) => {
 
 userRouter.post("/", async (req: Request, res: Response) => {
     try {
-        const count = await UserModel.count({"createdAt": -1})
+        const count = await UserModel.find().sort({ createdAt: -1 })
         let result: unknown;
 
-        if (count > MAX_DOCS){
-             result =  await UserModel.findOneAndUpdate({"createdAt": -1}, {
-                ...req.body
-            }, {upsert: true, new: true})
-
+        if (count.length >= MAX_DOCS){
+             result =  await UserModel.findOneAndUpdate({}, {...req.body}, {new: true, overwrite: true}).sort('createdAt')
         } else {
              result = await  UserModel.create({
                 id: faker.datatype.uuid(),
