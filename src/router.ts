@@ -4,12 +4,9 @@ import UserModel from "./models/user";
 import faker from "faker";
 import {MAX_DOCS} from "./index";
 
-
-
 export const userRouter = express.Router();
 
-
-
+// GET ALL
 userRouter.get("/", async (req: Request, res: Response) => {
         return UserModel.find({}).then((users)=> {
             res.status(200).send(users);
@@ -18,6 +15,7 @@ userRouter.get("/", async (req: Request, res: Response) => {
     })
 });
 
+// GET OR CREATE BY ID
 userRouter.get("/:id", async (req: Request, res: Response) => {
     try {
         let result = await UserModel.findById(req.params.id)
@@ -39,6 +37,7 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
     }
 });
 
+// UPDATE BY ID
 userRouter.put("/:id", async (req: Request, res: Response) => {
     return UserModel.updateOne({id: req.params.id},{'$set': req.body}).then((message) => {
         res.status(201).send(message);
@@ -47,6 +46,7 @@ userRouter.put("/:id", async (req: Request, res: Response) => {
     })
 })
 
+// DELETE BY ID
 userRouter.delete("/:id", async (req: Request, res: Response) => {
     return UserModel.deleteOne({id: req.params.id}).then((message) => {
         res.status(200).send(message);
@@ -55,6 +55,7 @@ userRouter.delete("/:id", async (req: Request, res: Response) => {
     })
 })
 
+// DELETE ALL
 userRouter.delete("/", async (req: Request, res: Response) => {
     return UserModel.deleteMany({}).then((message) => {
         res.status(200).send(message);
@@ -63,14 +64,19 @@ userRouter.delete("/", async (req: Request, res: Response) => {
     })
 })
 
+// CREATE
 userRouter.post("/", async (req: Request, res: Response) => {
     try {
+        // get the list of documents created latest
         const count = await UserModel.find().sort({ createdAt: -1 })
         let result: unknown;
 
         if (count.length >= MAX_DOCS){
+             // if existing documents list > max documents
+            // overwrite the oldest document
              result =  await UserModel.findOneAndUpdate({}, {...req.body}, {new: true, overwrite: true}).sort('createdAt')
         } else {
+             // else follow the usual create flow
              result = await  UserModel.create({
                 id: faker.datatype.uuid(),
                 ...req.body

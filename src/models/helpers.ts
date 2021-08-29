@@ -3,10 +3,9 @@ import { Document } from "bson";
 import faker from "faker"
 import mongoose from "mongoose";
 import UserModel from "./user";
-import {TTL_SECS} from "../index";
+import {MAX_DOCS, TTL_SECS} from "../index";
 
-// const TTL_SECS: number = parseInt(process.env.TTL_SECS as string, 10)
-
+// helper functions
 export const connectDb = () => {
     return mongoose.connect(process.env.DATABASE_URL!);
 };
@@ -40,6 +39,10 @@ export const createSeedUsersWithMessages = async (records = 10) => {
         await UserModel.collection.createIndex({ "createdAt": 1 }, { expireAfterSeconds: TTL_SECS })
     }
 
-    await UserModel.collection.insertMany(users)
+    if (records >= MAX_DOCS) {
+        console.log(`cannot create records(${records}) > maximum documents(${MAX_DOCS})`)
+    } else {
+        await UserModel.collection.insertMany(users)
+    }
 
 };

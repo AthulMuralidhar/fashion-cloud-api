@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import {TTL_SECS} from "../index";
 
 
-
 const userSchema = new mongoose.Schema(
     {
         username: {
