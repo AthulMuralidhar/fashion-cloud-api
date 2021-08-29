@@ -20,24 +20,20 @@ userRouter.get("/", async (req: Request, res: Response) => {
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
     try {
-        // this is buggy now
-        // it is updating the cache all the time instread of finding and returing
-        // fucking sucks
-        const result = await UserModel.findByIdAndUpdate(req.params.id, {'$set': {
-                username: faker.name.findName(),
-                email: faker.internet.email(),
-                extraInfo: faker.lorem.text()
-            }
-        }, {upsert: true, new: true, rawResult: true })
+        let result = await UserModel.findById(req.params.id)
 
-        if (result.lastErrorObject.updatedExisting){
-            console.log(result)
+        if (result){
             console.log("Cache hit")
         } else {
-            console.log(result)
             console.log("Cache miss")
+            result = await  UserModel.create({
+                username: faker.name.findName(),
+                id: req.params.id,
+                email: faker.internet.email(),
+                extraInfo: faker.lorem.text()
+            })
         }
-        res.status(200).send(result.value)
+        res.status(200).send(result)
     } catch (e) {
         res.status(500).send(e);
     }
