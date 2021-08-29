@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
+import {TTL_SECS} from "../index";
 
-const TTL_SECS = Number(process.env.TTL_SECS) ?? 60
+
+
 const userSchema = new mongoose.Schema(
     {
         username: {
@@ -18,8 +20,9 @@ const userSchema = new mongoose.Schema(
     },
     { timestamps: true },
 );
-userSchema.index({ createdAt: 1 }, { expireAfterSeconds: TTL_SECS });
+userSchema.index({ "createdAt": 1 }, { expireAfterSeconds: TTL_SECS });
+
 const UserModel = mongoose.model('User', userSchema);
 
-
 export default UserModel;
+

@@ -20,6 +20,13 @@ if (!process.env.PORT) {
  
 const PORT: number = parseInt(process.env.PORT as string, 10);
 const eraseDatabaseOnInit = process.env.ERASE_ON_INIT
+
+// setup app wide constants
+export const TTL_SECS: number = parseInt(process.env.TTL_SECS as string, 10) ?? 60000;
+export const MAX_DOCS: number = parseInt(process.env.MAX_DOCS as string, 10) ?? 10;
+
+
+
 const app = express();
 
 app.use(helmet());
